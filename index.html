@@ -90,7 +90,7 @@ body.has-photo::after {
   position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 1;
   display: grid;
   grid-template-rows: var(--topbar) 1fr;
-  grid-template-columns: 21fr 60fr 19fr;   /* 比例分配：动态宽度下自动适配，不溢出 */
+  grid-template-columns: 23fr 54fr 23fr;   /* 比例分配：左右面板加宽（日志/订单/水果更大），中间操作区可横滑 */
   grid-template-areas: "top top top" "left main right";
   gap: 2px;   /* 面板贴近操作区 */
   padding: 0 6px 6px;   /* 顶栏贴顶，无上方空隙 */
@@ -103,11 +103,8 @@ body.has-photo::after {
 #topbar {
   grid-area: top; display: flex; align-items: center; justify-content: space-between; gap: 10px; position: relative;
   padding-left: 58px;   /* 顶栏左端避开摄像头区域 */
-  background: linear-gradient(90deg, rgba(7, 11, 32, .94), rgba(15, 21, 56, .92) 50%, rgba(7, 11, 32, .94));
-  border: 1px solid rgba(130, 150, 255, .32);
-  border-radius: 0 0 12px 12px;   /* 贴顶：上角直角、下角圆角 */
   padding: 0 10px;
-  box-shadow: inset 0 0 16px rgba(60, 80, 255, .16), 0 2px 8px rgba(0, 0, 0, .4);
+  /* 无底框：文字与按钮直接浮在背景上（应要求去除顶栏框，保留字样） */
 }
 #hud { display: flex; gap: 6px; flex-wrap: nowrap; }
 .hud-item {
@@ -142,12 +139,12 @@ body.has-photo::after {
   -webkit-background-clip: text; background-clip: text; color: transparent;
   white-space: nowrap; pointer-events: none;
 }
-#btn-settings {
+#btn-settings, #btn-rank {
   width: var(--tap); height: var(--tap); font-size: 20px;
   background: var(--panel); border: 1px solid var(--panel-border);
   border-radius: 12px; color: var(--text); cursor: pointer;
 }
-#btn-settings:active { transform: scale(.94); }
+#btn-settings:active, #btn-rank:active { transform: scale(.94); }
 
 /* 设置面板（右上角下拉） */
 #settings-panel {
@@ -161,6 +158,27 @@ body.has-photo::after {
   min-height: var(--tap); font-size: 13px; cursor: pointer;
 }
 .set-row input { width: 22px; height: 22px; accent-color: var(--accent); }
+
+/* 个人排行榜面板（🏆 按钮下方）：声望段位 + 历史纪录 + 段位一览 */
+#rank-panel {
+  position: absolute; top: calc(var(--topbar) + 12px); right: 10px; z-index: 60;
+  width: 220px;
+  background: rgba(10, 12, 32, .95); border: 1px solid var(--panel-border);
+  border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 5px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .5); backdrop-filter: blur(6px);
+  font-size: 12px;
+}
+.rank-title { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-align: center; }
+.rank-sub { text-align: center; font-size: 11px; color: var(--dim); margin-top: -2px; }
+.rank-divider { text-align: center; font-size: 10px; color: rgba(154, 163, 216, .5); letter-spacing: 2px; }
+.rank-item { display: flex; align-items: center; gap: 8px; padding: 5px 7px; margin-bottom: 3px; border-radius: 8px; font-size: 12px; color: var(--text); background: rgba(255, 255, 255, .04); }
+.rank-item.top { color: var(--gold); background: rgba(255, 209, 102, .12); border: 1px solid rgba(255, 209, 102, .4); }
+.rk-no { width: 18px; text-align: center; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+.rank-item.top .rk-no { color: var(--gold); }
+.rk-main { flex: 1; font-weight: 700; }
+.rk-main small { display: block; font-size: 10px; color: var(--dim); font-weight: 400; }
+.rk-time { font-size: 10px; color: var(--dim); flex-shrink: 0; }
+.rank-empty { text-align: center; font-size: 11px; color: var(--dim); padding: 10px 0; }
 
 /* ─────────── 通用面板卡片 ─────────── */
 .panel-card {
@@ -198,7 +216,7 @@ body.has-photo::after {
 #log-list { flex: 1; overflow-y: auto; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }   /* 隐藏白条 */
 #log-list::-webkit-scrollbar { display: none; }
 .log-item {
-  font-size: 12px; line-height: 1.45; padding: 3px 2px; color: var(--dim);
+  font-size: 13px; line-height: 1.5; padding: 4px 3px; color: var(--dim);
   border-bottom: 1px dashed rgba(255, 255, 255, .07);
 }
 .log-item.arrive { color: #9fdcff; }
@@ -504,15 +522,15 @@ body.has-photo::after {
   color: var(--accent); padding: 18px 0 14px;
 }
 .mystery-block small { display: block; font-size: 11px; font-weight: 400; color: var(--dim); letter-spacing: 1px; margin-top: 6px; }
-.cp-name { font-weight: 700; font-size: 13px; }
+.cp-name { font-weight: 700; font-size: 14px; }
 .cp-race {
   font-size: 10px; color: var(--accent2); background: rgba(180, 140, 255, .15);
   border: 1px solid rgba(180, 140, 255, .4); border-radius: 999px; padding: 1px 7px; margin-left: 4px;
 }
-.cp-quote { font-size: 10px; color: var(--dim); margin-top: 2px; }
+.cp-quote { font-size: 11px; color: var(--dim); margin-top: 2px; }
 .cp-wants { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
 .want-chip {
-  display: inline-flex; align-items: center; gap: 4px; font-size: 10px;
+  display: inline-flex; align-items: center; gap: 4px; font-size: 11px;
   background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .14);
   border-radius: 999px; padding: 2px 8px; white-space: nowrap;
 }
@@ -522,14 +540,14 @@ body.has-photo::after {
 .cp-bottom { display: flex; align-items: center; gap: 8px; }
 .cp-pat { flex: 1; display: flex; align-items: center; gap: 6px; }
 .cp-pat .pat-bar { width: 100%; height: 6px; }
-.cp-pat .pat-sec { font-size: 11px; color: var(--dim); flex-shrink: 0; }
-.cp-reward { color: var(--gold); font-weight: 700; font-size: 12px; white-space: nowrap; }
+.cp-pat .pat-sec { font-size: 12px; color: var(--dim); flex-shrink: 0; }
+.cp-reward { color: var(--gold); font-weight: 700; font-size: 13px; white-space: nowrap; }
 
 /* 水果区 */
 #fruit-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
 .fruit-btn {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  height: var(--tap); border-radius: 10px; font-size: 10px; cursor: pointer;
+  height: var(--tap); border-radius: 10px; font-size: 11px; cursor: pointer;
   background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .12); color: var(--text);
 }
 .fruit-btn:active { transform: scale(.95); }
@@ -747,7 +765,7 @@ body.shake-vibrate #app { animation: microVibrate .12s linear 4; }
 }
 /* 原料柜（左）与水果区（右）固定高度，与操作台底边对齐同一水平面 */
 #left-panel .panel-card:nth-child(2) {
-  height: 220px;
+  height: 240px;
   display: flex; flex-direction: column;
   margin-bottom: 30px;
 }
@@ -765,24 +783,24 @@ body.shake-vibrate #app { animation: microVibrate .12s linear 4; }
 #left-panel .panel-card:nth-child(2) #shelf-grid::-webkit-scrollbar { display: none; }
 #order-panel {
   flex: 1; overflow-y: auto; touch-action: pan-y;
-  -webkit-overflow-scrolling: touch; scrollbar-width: none; font-size: 13px;   /* 隐藏白条 */
+  -webkit-overflow-scrolling: touch; scrollbar-width: none; font-size: 14px;   /* 隐藏白条 */
 }
 #order-panel::-webkit-scrollbar { display: none; }
 .order-no {
-  display: inline-block; font-size: 10px; color: var(--gold);
+  display: inline-block; font-size: 11px; color: var(--gold);
   border: 1px solid rgba(255, 209, 102, .45); border-radius: 999px;
   padding: 1px 8px; margin-left: 6px; vertical-align: 2px; letter-spacing: 1px;
 }
 .order-rows { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
 .order-row {
-  display: flex; align-items: center; gap: 8px; min-height: 27px;
-  font-size: 11px; padding: 3px 9px;
+  display: flex; align-items: center; gap: 8px; min-height: 30px;
+  font-size: 12px; padding: 4px 9px;
   background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .09);
   border-radius: 8px;
 }
 .order-row i { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .order-row.drink-name {
-  font-weight: 700; font-size: 12px;
+  font-weight: 700; font-size: 13px;
   background: rgba(108, 240, 255, .09); border-color: rgba(108, 240, 255, .35);
 }
 .order-row.drink-name .or-tag { color: var(--accent2); border-color: rgba(180, 140, 255, .4); }
@@ -797,8 +815,8 @@ body.shake-vibrate #app { animation: microVibrate .12s linear 4; }
 
 /* ═══════════ 水果区加大 ═══════════ */
 #fruit-panel { grid-template-columns: repeat(2, 1fr); overflow-y: auto; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-.fruit-btn { height: 54px; font-size: 11px; }
-.fruit-btn .fr-ico { transform: scale(1.2); margin-bottom: 3px; }
+.fruit-btn { height: 64px; font-size: 12px; }
+.fruit-btn .fr-ico { transform: scale(1.35); margin-bottom: 4px; }
 
 /* ═══════════ 中间操作区：排队在上、调酒操作台贴底 ═══════════ */
 #queue-line {
@@ -835,8 +853,8 @@ body.shake-vibrate #app { animation: microVibrate .12s linear 4; }
 }
 .garnish-btn {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-  width: 84px; min-height: 46px; padding: 4px 6px;
-  border-radius: 10px; font-size: 10px; cursor: pointer;
+  width: 92px; min-height: 54px; padding: 5px 7px;
+  border-radius: 10px; font-size: 11px; cursor: pointer;
   background: linear-gradient(180deg, #1a2050, #101530);   /* 不透明底色 */
   border: 1px solid rgba(130, 150, 255, .35); color: var(--text);
   white-space: normal; line-height: 1.3; text-align: center;
@@ -848,14 +866,14 @@ body.shake-vibrate #app { animation: microVibrate .12s linear 4; }
 
 /* ─────────── 触控热区扩大：视觉尺寸不变，仅点击判定范围外扩（手机端友好） ─────────── */
 .station, .shelf-btn, .fruit-btn, .garnish-btn, .shelf-tab,
-#btn-auto-shake, #btn-dump, #btn-skip-story, #btn-pause, #btn-settings, #btn-restart, #btn-reset-save,
+#btn-auto-shake, #btn-dump, #btn-skip-story, #btn-pause, #btn-rank, #btn-settings, #btn-restart, #btn-reset-save,
 #shaker-mount {
   position: relative;
 }
 /* 热区扩大 20px（外观不变）：button 直接命中自身；摇酒壶是 div，热区由自身 ::after 承接，
    避免 station 级 ::after 覆盖层拦截点击（点击会命中 station 而非 shaker-mount，导致摇酒失效） */
 button.station::after, .shelf-btn::after, .fruit-btn::after, .garnish-btn::after, .shelf-tab::after,
-#btn-auto-shake::after, #btn-dump::after, #btn-skip-story::after, #btn-pause::after, #btn-settings::after, #btn-restart::after, #btn-reset-save::after,
+#btn-auto-shake::after, #btn-dump::after, #btn-skip-story::after, #btn-pause::after, #btn-rank::after, #btn-settings::after, #btn-restart::after, #btn-reset-save::after,
 #shaker-mount::after {
   content: "";
   position: absolute;
@@ -883,7 +901,7 @@ body { background: #000; overflow: hidden; }
 /* ─────────── 电脑端（鼠标指针设备）：恢复手机适配前的经典布局 ─────────── */
 @media (hover: hover) and (pointer: fine) {
   :root { --topbar: 38px; }
-  #app { grid-template-columns: 158px 1fr 180px; gap: 6px; }
+  #app { grid-template-columns: 180px 1fr 205px; gap: 6px; }
   #bar-title { font-size: 22px; }
   .hud-item { font-size: 13px; padding: 2px 8px; }
   .hud-item b { font-size: 14px; }
@@ -891,16 +909,17 @@ body { background: #000; overflow: hidden; }
   .station-ico { font-size: 30px; }
   .shaker-station { width: 140px; padding: 8px 10px; }
   #counter { gap: 14px; padding: 10px 16px; margin-top: -4px; margin-bottom: 36px; }
-  .q-avatar, .q-avatar-img, .q-avatar.has-img { width: 210px; height: 260px; }
-  .q-avatar { font-size: 150px; }
-  .q-quote { bottom: 262px; }
-  .q-cust { width: 212px; }
-  .q-name { font-size: 12px; max-width: 212px; }
+  .q-avatar, .q-avatar-img, .q-avatar.has-img { width: 170px; height: 210px; }
+  .q-avatar { font-size: 120px; }
+  .q-quote { bottom: 212px; }
+  .q-cust { width: 172px; }
+  .q-name { font-size: 12px; max-width: 172px; }
+  #queue-line { gap: 12px; }
   .pat-sec { font-size: 9px; }
-  .log-item { font-size: 11px; }
-  #order-panel { font-size: 12px; }
-  #left-panel .panel-card:nth-child(2) { height: 310px; }
-  #right-panel .panel-card:last-child { flex: none; height: 310px; }
+  .log-item { font-size: 12px; }
+  #order-panel { font-size: 13px; }
+  #left-panel .panel-card:nth-child(2) { height: 330px; }
+  #right-panel .panel-card:last-child { flex: none; height: 330px; }
   #order-card { flex: 1; }
   .shelf-tab { height: var(--tap); }
   .shelf-btn { height: var(--tap); }
@@ -925,6 +944,7 @@ body { background: #000; overflow: hidden; }
       <div class="hud-item" id="hud-lost">😠<span class="hud-label">流失</span><b>0</b>/20</div>
     </div>
     <button id="btn-pause" aria-label="暂停营业">⏸ 暂停</button>
+    <button id="btn-rank" aria-label="个人排行榜">🏆</button>
     <button id="btn-settings" aria-label="设置">⚙️</button>
   </header>
 
@@ -1058,6 +1078,7 @@ body { background: #000; overflow: hidden; }
       <div class="go-stat">😠 流失顾客<b id="go-lost">0</b></div>
       <div class="go-stat">📅 营业天数<b id="go-day">1</b></div>
       <div class="go-stat">🌟 最终声望<b id="go-rep">0</b></div>
+      <div class="go-stat">🏆 历史排名<b id="go-rank">—</b></div>
     </div>
     <button id="btn-restart">🔄 重新开始</button>
   </div>
@@ -1072,6 +1093,14 @@ body { background: #000; overflow: hidden; }
   <label class="set-row">🔊 音效<input type="checkbox" id="toggle-sound" checked></label>
   <label class="set-row">🎵 背景音乐<input type="checkbox" id="toggle-bgm" checked></label>
   <button class="set-row" id="btn-reset-save" style="background:none;border:none;width:100%;color:var(--danger);justify-content:center;">🗑 清空星币与声望存档</button>
+</div>
+
+<!-- 个人排行榜面板：每局打烊结算时上榜（历史最高声望 TOP 10） -->
+<div id="rank-panel" class="hidden">
+  <div class="rank-title">🏆 最高声望排行榜</div>
+  <div class="rank-sub">每局打烊（流失 20 人）自动上榜</div>
+  <div class="rank-divider">── 历史最高声望 TOP 10 ──</div>
+  <div id="rank-list"></div>
 </div>
 
 
@@ -1407,6 +1436,7 @@ function startStory() {
 const state = {
   coins: 0,                       // 星币（不清零，跨刷新积累）
   rep: CONFIG.START_REP,          // 声望（不清零，跨刷新积累）
+  runs: [],                       // 个人排行榜：每局打烊时的最终声望纪录 [{rep, coins, day, t}]（不清零）
   served: 0,                      // 成功订单数（接待顾客数）
   lost: 0,                        // 流失顾客数（≥20 触发 GameOver）
   perfectCount: 0, goodCount: 0,  // 用于计算好评率
@@ -1522,15 +1552,41 @@ function toggleBGM() {
 /* 星币与声望不清零：localStorage 跨刷新积累（设置面板可手动清零） */
 const SAVE_KEY = 'cyberbar_save_v1';
 function saveProgress() {
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ coins: state.coins, rep: state.rep })); } catch (e) {}
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ coins: state.coins, rep: state.rep, runs: state.runs })); } catch (e) {}
 }
 function loadProgress() {
   try {
     const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
     if (s && typeof s.coins === 'number' && typeof s.rep === 'number') {
       state.coins = s.coins; state.rep = s.rep;
+      state.runs = Array.isArray(s.runs) ? s.runs : [];   // 旧存档无排行榜字段时为空榜
     }
   } catch (e) {}
+}
+
+/* 打烊上榜：每局结束（流失满 20 人）把最终声望计入个人排行榜，保留 TOP 10
+   返回本次排名（1 起）；被挤出 TOP 10 返回 0 */
+function recordRun() {
+  const rec = { rep: state.rep, coins: state.coins, day: state.day, t: Date.now() };
+  state.runs.push(rec);
+  state.runs.sort((a, b) => b.rep - a.rep || b.t - a.t);   // 声望高者在前，同声望新的在前
+  if (state.runs.length > 10) state.runs.length = 10;
+  saveProgress();
+  return state.runs.indexOf(rec) + 1;
+}
+
+/* 个人排行榜面板：历史最高声望 TOP 10（每局打烊结算时上榜） */
+function renderRankPanel() {
+  const list = el('rank-list');
+  if (!state.runs.length) {
+    list.innerHTML = '<div class="rank-empty">暂无纪录，打完一局自动上榜</div>';
+    return;
+  }
+  const d = t => { const x = new Date(t); return (x.getMonth() + 1) + '月' + x.getDate() + '日'; };
+  list.innerHTML = state.runs.map((r, i) =>
+    `<div class="rank-item${i === 0 ? ' top' : ''}"><span class="rk-no">${i + 1}</span>` +
+    `<span class="rk-main">🌟 ${r.rep} 声望<small>🪙 ${r.coins} 星币 · 第 ${r.day} 天</small></span>` +
+    `<span class="rk-time">${d(r.t)}</span></div>`).join('');
 }
 
 /* 订单编号文本：00001号订单 */
@@ -2362,6 +2418,8 @@ function showGameOver() {
   el('go-lost').textContent = state.lost;
   el('go-day').textContent = state.day;
   el('go-rep').textContent = state.rep;
+  const rank = recordRun();
+  el('go-rank').textContent = rank > 0 ? '第 ' + rank + ' 名' : '未上榜';
   el('gameover-overlay').classList.remove('hidden');
   playSound('angry');
   vibrate(80);
@@ -2507,7 +2565,14 @@ function init() {
   el('btn-ice').addEventListener('click', addIce);
   el('btn-pour').addEventListener('click', pourGlass);
   el('btn-bell').addEventListener('click', ringBell);
-  el('btn-settings').addEventListener('click', () => el('settings-panel').classList.toggle('hidden'));
+  el('btn-settings').addEventListener('click', () => { el('rank-panel').classList.add('hidden'); el('settings-panel').classList.toggle('hidden'); });
+  // 个人排行榜：与设置面板互斥，打开时刷新数据
+  el('btn-rank').addEventListener('click', () => {
+    el('settings-panel').classList.add('hidden');
+    const p = el('rank-panel');
+    p.classList.toggle('hidden');
+    if (!p.classList.contains('hidden')) renderRankPanel();
+  });
   el('btn-restart').addEventListener('click', () => location.reload());
 
   // 开场剧情：点击屏幕任意处推进（打字中→跳过动画；否则→下一段；最后一段→关闭）
@@ -2526,6 +2591,7 @@ function init() {
   el('btn-reset-save').addEventListener('click', () => {
     try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
     state.coins = 0; state.rep = CONFIG.START_REP;
+    state.runs = [];   // 个人排行榜一并清零
     renderHUD();
     toast('🗑 星币与声望已清零');
   });
